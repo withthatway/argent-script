@@ -1,0 +1,3834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Basic Meta Tags -->
+    <title>Argent Script — AI Voice Generator</title>
+    <meta name="description" content="Generate text to audio for free and without limits, powered by GPT-4o Audio. Instantly convert your words into natural, lifelike speech.">
+    <meta name="keywords" content="argent, argent script, free text to speech AI, free speech to text AI, GPT-4o audio, OpenAI audio, AI voice generator, TTS free, real-time voice synthesis, GPT text to speech, lifelike AI voices, voice cloning, AI audio tools, GPT audio model">
+    <!-- Open Graph (for social sharing) -->
+    <meta property="og:title" content="Argent Script — AI Voice Generator">
+    <meta property="og:description" content="Generate text to speech for free and without limits, powered by GPT-4o Audio. Instantly convert your words into natural, lifelike speech.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://argent-script.vercel.app">
+    <meta property="og:image" content="https://user.uploads.dev/file/0e44e29314fa955ef1d9be1ef44a027e.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Argent Script — AI Voice Generator">
+    <meta name="twitter:description" content="Generate text to speech for free and without limits, powered by GPT-4o Audio. Instantly convert your words into natural, lifelike speech.">
+    <meta name="twitter:image" content="https://user.uploads.dev/file/0e44e29314fa955ef1d9be1ef44a027e.jpg">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" href="https://user.uploads.dev/file/25cd0583a62550d44c060a7280e4b421.png" />
+    <link rel="icon" type="image/png" href="https://user.uploads.dev/file/25cd0583a62550d44c060a7280e4b421.png" sizes="180x180" />
+    <link rel="icon" type="image/png" href="https://user.uploads.dev/file/25cd0583a62550d44c060a7280e4b421.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="https://user.uploads.dev/file/25cd0583a62550d44c060a7280e4b421.png" sizes="16x16" />    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111113;
+            --bg-tertiary: #18181b;
+            --border-color: #27272a;
+            --text-primary: #e5e5e5;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-color: #6366f1;
+            --accent-hover: #5855eb;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --danger-color: #ef4444;
+            --border-radius: 2px;
+            --transition-default: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            width: 100%;
+            position: relative;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 35%, rgba(99, 102, 241, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 85% 75%, rgba(99, 102, 241, 0.1) 0%, transparent 20%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        img.no-action {
+          user-select: none;
+          pointer-events: none;
+          -webkit-user-drag: none;
+        }
+        
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+        
+        .loading-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .loading-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            animation: pulse 2s infinite;
+        }
+        
+        .loading-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #ffffff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+            position: relative;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: titleFadeIn 0.8s ease-out forwards;
+        }
+        
+        .loading-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.5s forwards;
+        }
+        
+        .loading-progress-container {
+            width: 300px;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .loading-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-hover));
+            border-radius: var(--border-radius);
+            position: relative;
+            animation: progressAnimation 3.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+        
+        .loading-progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            animation: shimmer 1.5s infinite linear;
+        }
+        
+        .loading-status {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+            height: 20px;
+            text-align: center;
+        }
+        
+        .loading-percentage {
+            position: absolute;
+            right: -40px;
+            top: -7px;
+            font-size: 12px;
+            color: var(--accent-color);
+            font-weight: 500;
+            min-width: 36px;
+            text-align: left;
+        }
+        
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+        
+        .audio-wave-bar {
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: var(--border-radius);
+            opacity: 0.3;
+            transform-origin: bottom;
+            animation: waveAnimation 1.2s ease-in-out infinite;
+        }
+        
+        .audio-wave-bar:nth-child(1) {
+            animation-delay: 0s;
+            height: 30%;
+        }
+        
+        .audio-wave-bar:nth-child(2) {
+            animation-delay: 0.1s;
+            height: 50%;
+        }
+        
+        .audio-wave-bar:nth-child(3) {
+            animation-delay: 0.2s;
+            height: 70%;
+        }
+        
+        .audio-wave-bar:nth-child(4) {
+            animation-delay: 0.3s;
+            height: 90%;
+        }
+        
+        .audio-wave-bar:nth-child(5) {
+            animation-delay: 0.4s;
+            height: 60%;
+        }
+        
+        .audio-wave-bar:nth-child(6) {
+            animation-delay: 0.5s;
+            height: 80%;
+        }
+        
+        .audio-wave-bar:nth-child(7) {
+            animation-delay: 0.6s;
+            height: 40%;
+        }
+        
+        .audio-wave-bar:nth-child(8) {
+            animation-delay: 0.7s;
+            height: 50%;
+        }
+        
+        .audio-wave-bar:nth-child(9) {
+            animation-delay: 0.8s;
+            height: 70%;
+        }
+        
+        @keyframes titleFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes waveAnimation {
+            0%, 100% {
+                transform: scaleY(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scaleY(2);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(1.05);
+                filter: brightness(1.2) drop-shadow(0 0 10px var(--accent-glow));
+            }
+            100% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes progressAnimation {
+            0% {
+                width: 0%;
+            }
+            5% {
+                width: 5%;
+            }
+            10% {
+                width: 8%;
+            }
+            15% {
+                width: 12%;
+            }
+            20% {
+                width: 18%;
+            }
+            25% {
+                width: 22%;
+            }
+            30% {
+                width: 27%;
+            }
+            35% {
+                width: 32%;
+            }
+            40% {
+                width: 38%;
+            }
+            45% {
+                width: 43%;
+            }
+            50% {
+                width: 49%;
+            }
+            55% {
+                width: 54%;
+            }
+            60% {
+                width: 60%;
+            }
+            65% {
+                width: 65%;
+            }
+            70% {
+                width: 72%;
+            }
+            75% {
+                width: 78%;
+            }
+            80% {
+                width: 84%;
+            }
+            85% {
+                width: 88%;
+            }
+            90% {
+                width: 92%;
+            }
+            95% {
+                width: 96%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .magic-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleAnimation 3s ease-in-out infinite;
+        }
+        
+        @keyframes particleAnimation {
+            0% {
+                opacity: 0;
+                transform: translateY(0) translateX(0);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) translateX(20px);
+            }
+        }
+        
+        .loading-features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 24px;
+            max-width: 600px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 1.2s forwards;
+        }
+        
+        .loading-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(24, 24, 27, 0.5);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .loading-feature i {
+            color: var(--accent-color);
+            width: 14px;
+            height: 14px;
+        }
+        
+        .loading-steps {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 8px;
+            animation: fadeIn 0.8s ease-out 0.7s forwards;
+            opacity: 0;
+        }
+        
+        .loading-step {
+            width: 8px;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+        
+        .loading-step.active {
+            background: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+        
+        main.container {
+            max-width: 480px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 16px;
+            flex: 1;
+            overflow-x: hidden; /* Additional protection against horizontal scroll */
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+        
+        .page-header::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        }
+        
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+        
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 300;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .language-switch {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            gap: 8px;
+            flex-wrap: wrap; /* Allow buttons to wrap to next line */
+            max-width: 100%; /* Ensure it doesn't exceed parent container width */
+        }
+        
+        .lang-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-muted);
+            font-size: 12px;
+            padding: 4px 12px;
+            cursor: pointer;
+            transition: var(--transition-default);
+        }
+        
+        .lang-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .lang-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-hover);
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 12px;
+        }
+        
+        .label::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .file-upload {
+            position: relative;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 32px 16px;
+            text-align: center;
+            background: var(--bg-secondary);
+            transition: var(--transition-default);
+            cursor: pointer;
+            width: 100%;
+            background-image: 
+                radial-gradient(circle at 90% 10%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 10% 90%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .file-upload::before,
+        .file-upload::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border: 2px solid var(--accent-color);
+            opacity: 0.4;
+            border-radius: var(--border-radius);
+            transition: var(--transition-default);
+        }
+        
+        .file-upload::before {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+            transform: translate(-30%, -30%);
+        }
+        
+        .file-upload::after {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
+            transform: translate(30%, 30%);
+        }
+        
+        .file-upload:hover {
+            border-color: var(--accent-color);
+            background: rgba(24, 24, 27, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        
+        .file-upload:hover::before,
+        .file-upload:hover::after {
+            opacity: 0.8;
+            transform: translate(0, 0);
+        }
+        
+        .file-upload.dragover {
+            border-color: var(--accent-color);
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+        
+        .file-upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .file-upload-icon {
+            width: 48px;
+            height: 48px;
+            color: var(--text-muted);
+            background: rgba(39, 39, 42, 0.4);
+            padding: 12px;
+            border-radius: 50%;
+            transition: var(--transition-default);
+        }
+        
+        .file-upload:hover .file-upload-icon {
+            color: var(--accent-color);
+            transform: scale(1.05);
+        }
+        
+        .file-upload-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .file-upload-formats {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .file-selected {
+            display: none;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 12px;
+            margin-top: 12px;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: var(--transition-default);
+        }
+        
+        .file-selected.show {
+            display: flex;
+            animation: slideDown 0.3s ease forwards;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .file-info {
+            flex: 1;
+            min-width: 0; /* Prevent text overflow */
+        }
+        
+        .file-name {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            word-break: break-all;
+        }
+        
+        .file-size {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .remove-file {
+            background: rgba(39, 39, 42, 0.5);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--border-radius);
+            transition: var(--transition-default);
+            flex-shrink: 0;
+        }
+        
+        .remove-file:hover {
+            color: var(--danger-color);
+            background: rgba(239, 68, 68, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .input-group {
+            position: relative;
+            width: 100%;
+        }
+        
+        .textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            transition: var(--transition-default);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-image: 
+                linear-gradient(135deg, rgba(24, 24, 27, 0) 0%, rgba(99, 102, 241, 0.03) 100%);
+            position: sticky;
+            top: 0;
+        }
+        
+        .textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 1px var(--accent-color), 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .textarea::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .textarea-trash-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-default);
+            z-index: 1;
+        }
+        
+        .textarea-trash-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+        
+        .textarea-trash-btn:active {
+            transform: scale(0.95);
+            background: rgba(0, 0, 0, 0.9);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        .select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition-default);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-image: 
+                linear-gradient(135deg, rgba(24, 24, 27, 0) 0%, rgba(99, 102, 241, 0.03) 100%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 40px;
+        }
+        
+        .select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 1px var(--accent-color), 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .select option {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        /* Custom Voice Selector Styles */
+        .custom-voice-select-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-voice-selected {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition-default);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-image: linear-gradient(135deg, rgba(24, 24, 27, 0) 0%, rgba(99, 102, 241, 0.03) 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .custom-voice-selected:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .voice-select-icon {
+            color: var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .custom-voice-selected.active .voice-select-icon {
+            transform: rotate(180deg);
+        }
+
+        .custom-voice-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .custom-voice-dropdown.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            animation: dropdownFadeIn 0.3s ease forwards;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .voice-category {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .voice-category:last-child {
+            border-bottom: none;
+        }
+
+        .voice-category-label {
+            padding: 6px 16px;
+            font-size: 12px;
+            color: var(--accent-color);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .voice-options {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .voice-option {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .voice-option:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+            padding-left: 20px;
+        }
+
+        .voice-option.selected {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: var(--accent-color);
+            font-weight: 500;
+            padding-left: 20px;
+        }
+
+        .voice-option.selected::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .voice-option::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 16px;
+            right: 16px;
+            height: 1px;
+            background: rgba(39, 39, 42, 0.3);
+        }
+
+        .voice-option:last-child::after {
+            display: none;
+        }
+
+        .hidden-select {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            height: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition-default);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.25);
+        }
+        
+        .generate-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent
+            );
+            transition: 0.6s;
+        }
+        
+        .generate-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+        
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35);
+        }
+        
+        .generate-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+        
+        .generate-btn:disabled {
+            background: #2a2a30;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .result-section {
+            margin-top: 32px;
+            display: none;
+            width: 100%;
+        }
+        
+        .result-section.show {
+            display: block;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            width: 100%;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transition: var(--transition-default);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-color), var(--accent-hover));
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        
+        .result-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .result-title i {
+            color: var(--accent-color);
+        }
+        
+        .audio-player {
+            width: 100%;
+            background: rgba(24, 24, 27, 0.5);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            position: relative;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .audio-player::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), transparent);
+            border-radius: calc(var(--border-radius) + 2px);
+            z-index: -1;
+            opacity: 0.5;
+        }
+        
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-default);
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .play-btn::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 0 12px 3px var(--accent-glow);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .play-btn:hover::after {
+            opacity: 1;
+        }
+        
+        .play-btn svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+        }
+        
+        .progress-container {
+            flex: 1;
+            height: 40px;
+            background: rgba(39, 39, 42, 0.5);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            position: relative;
+            min-width: 0; /* Prevent flex item from overflowing */
+            overflow: hidden;
+            padding: 0 2px;
+        }
+        
+        .waveform {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 0 2px;
+            z-index: 0;
+        }
+        
+        .waveform-bar {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 1px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(99, 102, 241, 0.1);
+            z-index: 1;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            transition: width 0.1s ease;
+        }
+        
+        .time-display {
+            font-size: 12px;
+            color: var(--text-secondary);
+            min-width: 45px;
+            text-align: left;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .download-btn {
+            padding: 4px 12px;
+            background: rgba(39, 39, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-top: 16px;
+            gap: 6px;
+            transition: var(--transition-default);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .download-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            transition: 0.4s;
+        }
+        
+        .download-btn:hover {
+            background: rgba(63, 63, 70, 0.8);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .download-btn:hover::before {
+            left: 100%;
+        }
+        
+        .transcript {
+            background: rgba(15, 15, 16, 0.6);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            border-left: 3px solid var(--accent-color);
+            word-wrap: break-word; /* Ensure long text wraps */
+            position: relative;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        
+        .transcript::before {
+            content: """;
+            position: absolute;
+            top: 4px;
+            left: 8px;
+            font-size: 40px;
+            color: rgba(99, 102, 241, 0.1);
+            font-family: serif;
+            line-height: 1;
+        }
+        
+        .page-footer {
+            margin-top: auto;
+            padding: 24px 16px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+            position: relative;
+        }
+        
+        .page-footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        }
+        
+        .page-footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-default);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-footer a::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-color);
+            transition: var(--transition-default);
+        }
+        
+        .page-footer a:hover {
+            color: var(--accent-hover);
+            text-shadow: 0 0 8px var(--accent-glow);
+        }
+        
+        .page-footer a:hover::after {
+            width: 100%;
+        }
+        
+        .page-footer p {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--border-radius);
+            padding: 12px;
+            color: #fca5a5;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+            position: relative;
+        }
+        
+        .error-message::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: rgba(239, 68, 68, 0.6);
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        
+        /* Example dataset styles */
+        .examples-section {
+            margin: 24px 0;
+            position: relative;
+        }
+        
+        .examples-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            justify-content: space-between;
+            transition: var(--transition-default);
+        }
+        
+        .examples-title::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .examples-title:hover {
+            color: var(--accent-color);
+        }
+        
+        .examples-title .toggle-icon {
+            transition: transform 0.3s ease;
+            color: var(--accent-color);
+        }
+        
+        .examples-title.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .examples-content {
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+            max-height: 2000px;
+            opacity: 1;
+        }
+        
+        .examples-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            width: 100%;
+        }
+        
+        .example-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 12px;
+            cursor: pointer;
+            transition: var(--transition-default);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .example-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-color), var(--accent-hover));
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            opacity: 0.6;
+        }
+        
+        .example-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        
+        .example-card:active {
+            transform: translateY(0);
+        }
+        
+        .example-prompt {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            max-height: 56px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        .example-details {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(39, 39, 42, 0.8);
+        }
+        
+        .example-voice {
+            font-weight: 500;
+            color: var(--accent-color);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 2px 6px;
+            border-radius: var(--border-radius);
+        }
+        
+        .example-emotion {
+            color: var(--text-secondary);
+        }
+        
+        /* Demo Voices Section Styles */
+        .demo-voices-section {
+            margin: 24px 0;
+            position: relative;
+        }
+        
+        .demo-voices-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            justify-content: space-between;
+            transition: var(--transition-default);
+        }
+        
+        .demo-voices-title::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .demo-voices-title:hover {
+            color: var(--accent-color);
+        }
+        
+        .demo-voices-title .toggle-icon {
+            transition: transform 0.3s ease;
+            color: var(--accent-color);
+        }
+        
+        .demo-voices-title.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .demo-voices-content {
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+            max-height: 600px;
+            opacity: 1;
+            overflow: auto;
+        }
+        
+        .demo-voices-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .demo-category {
+            margin-bottom: 20px;
+        }
+        
+        .demo-category-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .demo-voices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            width: 100%;
+        }
+        
+        .demo-voice-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 12px;
+            transition: var(--transition-default);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .demo-voice-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        
+        .demo-voice-player {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        
+        .demo-voice-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        
+        .demo-voice-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .demo-voice-gender {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: var(--border-radius);
+        }
+        
+        .demo-voice-gender.Male {
+            color: var(--accent-color);
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        
+        .demo-voice-gender.Female {
+            color: var(--danger-color);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        
+        .compact-audio-player {
+            width: 100%;
+            background: rgba(24, 24, 27, 0.5);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .compact-play-btn {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-default);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .compact-play-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .compact-play-btn svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+        }
+        
+        .compact-progress {
+            flex: 1;
+            height: 20px;
+            background: rgba(39, 39, 42, 0.5);
+            border-radius: var(--border-radius);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .compact-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: rgba(99, 102, 241, 0.3);
+            transition: width 0.1s ease;
+        }
+        
+        /* Tooltip styles */
+        .tooltip-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition-default);
+            vertical-align: middle;
+        }
+        
+        .tooltip-trigger:hover {
+            color: var(--accent-color);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .tooltip-trigger:hover i {
+            animation: pulse 1s infinite;
+        }
+        
+        .tooltip-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%; /* Changed from left: 0 to center the tooltip */
+            transform: translateX(-50%); /* Added to center the tooltip */
+            z-index: 100;
+            width: 360px;
+            max-width: 90vw; /* Reduced from 95vw to ensure it stays within viewport */
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: left;
+            font-weight: normal;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            animation: tooltipFadeIn 0.3s ease-out forwards;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden; /* Prevent horizontal overflow */
+            line-height: 1.4;
+            word-wrap: break-word; /* Ensure text wraps */
+        }
+        
+        @keyframes tooltipFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) translateX(-50%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) translateX(-50%);
+            }
+        }
+        
+        .tooltip-content::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 50%; /* Changed from left: 15px to center the arrow */
+            margin-left: -6px; /* Added to center the arrow */
+            width: 12px;
+            height: 12px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+            transform: rotate(45deg);
+        }
+        
+        .tooltip-content strong {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            font-size: 14px;
+        }
+        
+        .tooltip-content p {
+            margin-bottom: 10px;
+        }
+        
+        .tooltip-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tooltip-content.show {
+            display: block;
+        }
+        
+        /* Comments toggle button styles */
+        .comments-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition-default);
+            margin-top: 32px;
+            width: max-content;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .comments-toggle:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+        }
+        
+        .comments-toggle:active {
+            transform: translateY(1px);
+        }
+        
+        .comments-toggle i {
+            color: var(--accent-color);
+        }
+        
+        .commentSection {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.3s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+        
+        .commentSection.show {
+            max-height: 2000px; /* Large enough to accommodate content */
+            opacity: 1;
+            margin-top: 1rem;
+        }
+        
+        /* Copy Button Styles */
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--border-radius);
+            transition: var(--transition-default);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto; /* Push to the right */
+        }
+        
+        .copy-btn:hover {
+            color: var(--accent-color);
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .copy-btn.copied {
+            color: var(--accent-color);
+            animation: copyPulse 0.5s ease;
+        }
+        
+        @keyframes copyPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            main.container {
+                padding: 16px 12px;
+            }
+            
+            .page-header h1 {
+                font-size: 24px;
+            }
+            
+            .file-upload {
+                padding: 24px 12px;
+            }
+            
+            .audio-controls {
+                flex-wrap: wrap;
+            }
+            
+            .time-display {
+                min-width: 40px;
+            }
+            
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-voices-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tooltip-content {
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100vw - 32px);
+                max-width: calc(100vw - 32px);
+                max-height: 50vh; /* Limit height on mobile */
+            }
+            
+            .tooltip-content::before {
+                left: 50%;
+                margin-left: -6px;
+            }
+            
+            .loading-screen {
+                padding: 0 20px;
+            }
+            
+            .loading-progress-container {
+                width: 250px;
+            }
+            
+            .loading-title {
+                font-size: 26px;
+            }
+            
+            .loading-subtitle {
+                font-size: 14px;
+            }
+            
+            .loading-features {
+                max-width: 280px;
+                gap: 8px;
+            }
+        }
+        
+        /* Additional breakpoint for very small screens */
+        @media (max-width: 400px) {
+            .tooltip-content {
+                width: calc(100vw - 20px);
+                max-width: calc(100vw - 20px);
+                padding: 12px;
+            }
+            
+            .loading-progress-container {
+                width: 200px;
+            }
+            
+            .loading-feature {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <aside class="loading-screen" id="loadingScreen">
+        <div class="magic-particles" id="magicParticles"></div>
+        <div class="loading-logo">
+            <img src="https://user.uploads.dev/file/4a1c3f545f88c0ceedaf9ceb1b877f2f.png" alt="Argent Script Logo" class="no-action">
+        </div>
+        <h1 class="loading-title">Argent Script</h1>
+        <p class="loading-subtitle">Transforming text into lifelike speech</p>
+        
+        <div class="audio-wave">
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+            <div class="audio-wave-bar"></div>
+        </div>
+        
+        <div class="loading-progress-container">
+            <div class="loading-progress-bar" id="loadingProgressBar"></div>
+            <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+        <div class="loading-status" id="loadingStatus">Initializing voice models...</div>
+        
+        <div class="loading-features">
+            <div class="loading-feature">
+                <i data-lucide="mic"></i>
+                <span>Realistic Voices</span>
+            </div>
+            <div class="loading-feature">
+                <i data-lucide="languages"></i>
+                <span>50+ Languages</span>
+            </div>
+            <div class="loading-feature">
+                <i data-lucide="sparkles"></i>
+                <span>Emotional Tones</span>
+            </div>
+            <div class="loading-feature">
+                <i data-lucide="download"></i>
+                <span>Easy Export</span>
+            </div>
+        </div>
+        
+        <div class="loading-steps" id="loadingSteps">
+            <div class="loading-step active" data-step="1"></div>
+            <div class="loading-step" data-step="2"></div>
+            <div class="loading-step" data-step="3"></div>
+            <div class="loading-step" data-step="4"></div>
+            <div class="loading-step" data-step="5"></div>
+        </div>
+    </aside>
+
+    <!-- Support Me on Kofi -->
+    <!-- Floating Ko-fi Widget -->
+    <aside id="kofi-widget" style="position: fixed; bottom: 10px; left: 10px; z-index: 10; display: flex; flex-direction: column-reverse; align-items: flex-start;">
+      <!-- Toggle Button -->
+      <button
+        id="btn-kofi"
+        style="display: flex; align-items: center; gap: 6px; background: rgba(0, 0, 0, 0.75); color: #fff; border: none; border-radius: 3px; padding: 6px 10px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);"
+      >
+        <i data-lucide="coffee" style="width: 16px; height: 16px; color: #6468E5;"></i>
+        <span>Donate</span>
+      </button>
+
+      <!-- Iframe Wrapper -->
+      <div id="wrapper-kofi" style="position: relative; margin-bottom: 8px; margin-left: 8px; display: none; transform: scale(0.75); transform-origin: bottom left;">
+        <!-- Close Button -->
+        <button
+          id="closeBtn-kofi"
+          style="position: absolute; top: 6px; right: 6px; background: rgba(0, 0, 0, 0.5); border: none; border-radius: 50%; padding: 6px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;"
+        >
+          <i data-lucide="x" style="width: 16px; height: 16px; color: #fff;"></i>
+        </button>
+
+        <!-- Ko-fi iframe -->
+        <iframe
+          src="https://ko-fi.com/withthatway/?hidefeed=true&widget=true&embed=true&preview=true"
+          title="Support me on Ko-fi"
+          style="border: none; width: 100%; max-width: 320px; height: 550px; border-radius: 2px; overflow: hidden; background: #222;"
+          loading="lazy"
+        ></iframe>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <main class="container">
+        <header class="page-header">
+            <h1><img src="https://user.uploads.dev/file/4a1c3f545f88c0ceedaf9ceb1b877f2f.png" alt="Argent Script Logo" class="no-action" style="height: 42px; vertical-align: middle; margin-right: 8px;">Argent Script</h1>
+            <p>Convert text to natural-sounding speech with AI</p>
+        </header>
+        
+        <form id="audioForm">
+            <section class="form-group">
+                <label class="label">Audio Input (For Transcript)</label>
+                <div class="file-upload" id="fileUpload">
+                    <input type="file" id="audioFile" accept=".mp3,.opus,.aac,.flac,.wav,.pcm">
+                    <div class="file-upload-content">
+                        <i data-lucide="paperclip" class="file-upload-icon"></i>
+                        <div class="file-upload-text">
+                            Drop your audio file here or click to browse
+                        </div>
+                        <div class="file-upload-formats">
+                            Supports: MP3, OPUS, AAC, FLAC, WAV, PCM
+                        </div>
+                    </div>
+                </div>
+                <div class="file-selected" id="fileSelected">
+                    <i data-lucide="file-audio-2" style="width: 20px; height: 20px; color: #6366f1;"></i>
+                    <div class="file-info">
+                        <div class="file-name" id="fileName"></div>
+                        <div class="file-size" id="fileSize"></div>
+                    </div>
+                    <button type="button" class="remove-file" id="removeFile">
+                        <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </section>
+            
+            <section class="form-group">
+                <label class="label" for="textInput">
+                    Text Content
+                    <span class="tooltip-trigger" id="languagesTooltipTrigger">
+                        <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+                    </span>
+                    <div class="tooltip-content" id="languagesTooltipContent">
+                        <strong>Supported languages</strong>
+                        <p>The model generally follows the Whisper model in terms of language support. Whisper supports the following languages and performs well, despite voices being optimized for English:</p>
+                        <p>Afrikaans, Arabic, Armenian, Azerbaijani, Belarusian, Bosnian, Bulgarian, Catalan, Chinese, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Italian, Japanese, Kannada, Kazakh, Korean, Latvian, Lithuanian, Macedonian, Malay, Marathi, Maori, Nepali, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swahili, Swedish, Tagalog, Tamil, Thai, Turkish, Ukrainian, Urdu, Vietnamese, and Welsh.</p>
+                        <p>You can generate spoken audio in these languages by providing input text in the language of your choice.</p>
+                    </div>
+                </label>
+                <div class="input-group">
+                    <textarea 
+                        id="textInput" 
+                        class="textarea" 
+                        placeholder="Enter the text you want to convert to speech..."
+                        required
+                    ></textarea>
+                    <button type="button" class="textarea-trash-btn" id="clearTextBtn" title="Clear text">
+                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                    </button>
+                </div>
+            </section>
+            
+            <section class="form-group">
+                <label class="label" for="tonesInput">Tone</label>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="tonesInput" 
+                        class="textarea" 
+                        style="min-height: auto; height: 48px;" 
+                        placeholder="Enter the tone (e.g., Happy, Sad, Angry)"
+                    />
+                </div>
+            </section>
+            
+            <section class="form-group">
+                <label class="label" for="voiceSelect">Voice</label>
+                <div class="custom-voice-select-container">
+                    <div class="custom-voice-selected" id="selectedVoice">
+                        <span id="selectedVoiceText">Alloy</span>
+                        <i data-lucide="chevron-down" class="voice-select-icon"></i>
+                    </div>
+                    <div class="custom-voice-dropdown" id="voiceDropdown">
+                        <div class="voice-category">
+                            <div class="voice-category-label">Female</div>
+                            <div class="voice-options female-voices">
+                                <div class="voice-option" data-value="alloy">Alloy</div>
+                                <div class="voice-option" data-value="aster">Aster</div>
+                                <div class="voice-option" data-value="brook">Brook</div>
+                                <div class="voice-option" data-value="clover">Clover</div>
+                                <div class="voice-option" data-value="coral">Coral</div>
+                                <div class="voice-option" data-value="elan">Elan</div>
+                                <div class="voice-option" data-value="fable">Fable</div>
+                                <div class="voice-option" data-value="marilyn">Marilyn</div>
+                                <div class="voice-option" data-value="meadow">Meadow</div>
+                                <div class="voice-option" data-value="nova">Nova</div>
+                                <div class="voice-option" data-value="rio">Rio</div>
+                                <div class="voice-option" data-value="sage">Sage</div>
+                                <div class="voice-option" data-value="shimmer">Shimmer</div>
+                            </div>
+                        </div>
+                        <div class="voice-category">
+                            <div class="voice-category-label">Male</div>
+                            <div class="voice-options male-voices">
+                                <div class="voice-option" data-value="amuch">Amuch</div>
+                                <div class="voice-option" data-value="ash">Ash</div>
+                                <div class="voice-option" data-value="ballad">Ballad</div>
+                                <div class="voice-option" data-value="dan">Dan</div>
+                                <div class="voice-option" data-value="echo">Echo</div>
+                                <div class="voice-option" data-value="jazz">Jazz</div>
+                                <div class="voice-option" data-value="onyx">Onyx</div>
+                                <div class="voice-option" data-value="verse">Verse</div>
+                            </div>
+                        </div>
+                    </div>
+                    <select id="voiceSelect" class="hidden-select">
+                        <option value="amuch">Amuch</option>
+                        <option value="ash">Ash</option>
+                        <option value="ballad">Ballad</option>
+                        <option value="dan">Dan</option>
+                        <option value="echo">Echo</option>
+                        <option value="jazz">Jazz</option>
+                        <option value="onyx">Onyx</option>
+                        <option value="verse">Verse</option>
+                        <option value="alloy">Alloy</option>
+                        <option value="aster">Aster</option>
+                        <option value="brook">Brook</option>
+                        <option value="clover">Clover</option>
+                        <option value="coral">Coral</option>
+                        <option value="elan">Elan</option>
+                        <option value="fable">Fable</option>
+                        <option value="marilyn">Marilyn</option>
+                        <option value="meadow">Meadow</option>
+                        <option value="nova">Nova</option>
+                        <option value="rio">Rio</option>
+                        <option value="sage">Sage</option>
+                        <option value="shimmer">Shimmer</option>
+                    </select>
+                </div>
+            </section>
+            
+            <button type="button" class="generate-btn" id="generateBtn">
+                <i data-lucide="play" style="width: 20px; height: 20px;"></i>
+                Generate Audio
+            </button>
+        </form>
+        
+        <div class="error-message" id="errorMessage" role="alert"></div>
+        
+        <section class="result-section" id="resultSection">
+            <article class="result-card">
+                <h2 class="result-title">
+                    <i data-lucide="volume-2" style="width: 20px; height: 20px;"></i>
+                    Generated Audio
+                </h2>
+                <div class="audio-player">
+                    <audio id="audioElement" style="display: none;"></audio>
+                    <div class="audio-controls">
+                        <button class="play-btn" id="playBtn" aria-label="Play audio">
+                            <i data-lucide="play"></i>
+                        </button>
+                        <div class="progress-container" id="progressContainer">
+                            <div class="waveform" id="waveform"></div>
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div class="time-display" id="timeDisplay">0:00</div>
+                    </div>
+                    <button class="download-btn" id="downloadBtn">
+                        <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                        Download
+                    </button>
+                </div>
+            </article>
+            
+            <article class="result-card" id="transcriptCard" style="display: none;">
+                <h2 class="result-title">
+                    <i data-lucide="file-text" style="width: 20px; height: 20px;"></i>
+                    Transcript
+                    <button class="copy-btn" id="copyTranscriptBtn" title="Copy transcript">
+                        <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </h2>
+                <div class="transcript" id="transcriptText"></div>
+            </article>
+        </section>
+
+      <!-- Comments Toggle Button -->
+      <button class="comments-toggle" id="commentsToggleBtn">
+        <i data-lucide="message-square" style="width: 18px; height: 18px;"></i>
+        Comments
+      </button>
+
+      <!-- Comment Section -->
+      <!--section class="commentSection">
+        [commentsPlugin(commentOptions)]
+      </section-->
+
+      <!-- Examples Section -->
+      <section class="examples-section">
+        <h2 class="examples-title" id="examplesTitleToggle">
+            <i data-lucide="sparkles" style="width: 16px; height: 16px; color: var(--accent-color);"></i>
+            Example Templates
+            <i data-lucide="chevron-down" class="toggle-icon" style="width: 16px; height: 16px;"></i>
+        </h2>
+        <div class="examples-content" id="examplesContent">
+          <nav class="language-switch">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="id">ID</button>
+            <button class="lang-btn" data-lang="jp">JP</button>
+            <button class="lang-btn" data-lang="cn">CN</button>
+            <button class="lang-btn" data-lang="ar">AR</button>
+            <button class="lang-btn" data-lang="ru">RU</button>
+            <button class="lang-btn" data-lang="hi">HI</button>
+            <button class="lang-btn" data-lang="de">DE</button>
+            <button class="lang-btn" data-lang="fr">FR</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="it">IT</button>
+            <button class="lang-btn" data-lang="af">AF</button>
+          </nav>
+          <div class="examples-grid" id="examplesGrid">
+              <!-- Examples will be dynamically added here -->
+          </div>
+        </div>
+      </section>
+      
+      <!-- Demo Voices Section -->
+      <section class="demo-voices-section">
+        <h2 class="demo-voices-title" id="demoVoicesTitleToggle">
+            <i data-lucide="headphones" style="width: 16px; height: 16px; color: var(--accent-color);"></i>
+            Demo Voices
+            <i data-lucide="chevron-down" class="toggle-icon" style="width: 16px; height: 16px;"></i>
+        </h2>
+        <div class="demo-voices-content" id="demoVoicesContent">
+            <div class="demo-category">
+                <h3 class="demo-category-title">Male</h3>
+                <div class="demo-voices-grid" id="maleVoicesGrid">
+                    <!-- Male voice samples will be added here dynamically -->
+                </div>
+            </div>
+            <div class="demo-category">
+                <h3 class="demo-category-title">Female</h3>
+                <div class="demo-voices-grid" id="femaleVoicesGrid">
+                    <!-- Female voice samples will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+      </section>
+    </main>
+    
+    <footer class="page-footer">
+        <a href="https://perchance.org/withthatway" target="_blank">WithThatWay Project</a>
+        <p>Part of 
+          <a href="https://github.com/pollinations/pollinations/tree/master" target="_blank" rel="noopener noreferrer">
+          <img 
+            src="https://user.uploads.dev/file/71c9c27b3c3b4633b21a87dbc457850a.png" 
+            alt="Pollinations AI" 
+            style="height: 24px; opacity: 0.7; transition: opacity 0.3s; vertical-align: middle; position: relative; bottom: 2px; margin-left: 0.2em;" 
+            onmouseover="this.style.opacity='1'" 
+            onmouseout="this.style.opacity='0.7'" 
+          />
+          </a>
+        </p>
+      [favicon("ai-text-to-audio")]
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize lucide icons on page load
+            lucide.createIcons();
+
+            // --- KoFi Script ---
+            const btnKofi = document.getElementById("btn-kofi");
+            const wrapperKofi = document.getElementById("wrapper-kofi");
+            const closeBtnKofi = document.getElementById("closeBtn-kofi");
+
+            btnKofi.addEventListener("click", () => {
+              wrapperKofi.style.display = wrapperKofi.style.display === "none" ? "block" : "none";
+            });
+
+            closeBtnKofi.addEventListener("click", () => {
+              wrapperKofi.style.display = "none";
+            });
+            
+            // --- Loading Screen Logic ---
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingProgressBar = document.getElementById('loadingProgressBar');
+            const loadingStatus = document.getElementById('loadingStatus');
+            const loadingPercentage = document.getElementById('loadingPercentage');
+            const loadingSteps = document.getElementById('loadingSteps');
+            const magicParticles = document.getElementById('magicParticles');
+            const mainContent = document.querySelector('.container');
+            
+            // Hide main content initially
+            mainContent.style.opacity = '0';
+            mainContent.style.transition = 'opacity 0.5s ease-in';
+            
+            // Create animated particles
+            for (let i = 0; i < 20; i++) {
+                createParticle();
+            }
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 4 + 2;
+                
+                // Random animation duration
+                const duration = Math.random() * 2 + 2;
+                
+                // Random delay
+                const delay = Math.random() * 3;
+                
+                particle.style.cssText = `
+                    left: ${x}%;
+                    top: ${y}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                    opacity: 0;
+                `;
+                
+                magicParticles.appendChild(particle);
+            }
+            
+            // Loading status messages
+            const loadingMessages = [
+                "Initializing voice models...",
+                "Preparing language processors...",
+                "Tuning audio quality...",
+                "Configuring speech parameters...",
+                "Setting up neural networks...",
+                "Almost ready..."
+            ];
+            
+            // Create a more controlled loading sequence that lasts exactly 3.5 seconds
+            let startTime = Date.now();
+            let endTime = startTime + 3500; // 3.5 seconds in milliseconds
+            
+            function updateLoadingProgress() {
+                let currentTime = Date.now();
+                let elapsedTime = currentTime - startTime;
+                let progress = Math.min(100, Math.floor((elapsedTime / 3500) * 100));
+                
+                // Update percentage display
+                loadingPercentage.textContent = `${progress}%`;
+                
+                // Update status message based on progress
+                let messageIndex = Math.min(loadingMessages.length - 1, Math.floor(progress / (100 / loadingMessages.length)));
+                loadingStatus.textContent = loadingMessages[messageIndex];
+                
+                // Update step indicators
+                let currentStep = Math.ceil(progress / 20); // 5 steps for 100%
+                document.querySelectorAll('.loading-step').forEach(step => {
+                    let stepNum = parseInt(step.dataset.step);
+                    if (stepNum <= currentStep) {
+                        step.classList.add('active');
+                    } else {
+                        step.classList.remove('active');
+                    }
+                });
+                
+                if (currentTime < endTime) {
+                    // Continue updating until we reach 3.5 seconds
+                    requestAnimationFrame(updateLoadingProgress);
+                } else {
+                    // Complete loading exactly at 3.5 seconds
+                    loadingPercentage.textContent = '100%';
+                    loadingStatus.textContent = "Ready!";
+                    
+                    // Fade out loading screen
+                    loadingScreen.classList.add('fade-out');
+                    
+                    // Show main content
+                    mainContent.style.opacity = '1';
+                    
+                    // Remove loading screen from DOM after fade out animation completes
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 500);
+                }
+            }
+            
+            // Start the loading progress update
+            requestAnimationFrame(updateLoadingProgress);
+
+            // --- DOM elements ---
+            const fileUpload = document.getElementById('fileUpload');
+            const audioFileInput = document.getElementById('audioFile');
+            const fileSelected = document.getElementById('fileSelected');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const removeFileBtn = document.getElementById('removeFile');
+            const audioForm = document.getElementById('audioForm');
+            const textInput = document.getElementById('textInput');
+            const tonesInput = document.getElementById('tonesInput');
+            const voiceSelect = document.getElementById('voiceSelect');
+            const generateBtn = document.getElementById('generateBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultSection = document.getElementById('resultSection');
+            const audioElement = new Audio(); // Use a single audio element
+            const playBtn = document.getElementById('playBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const waveform = document.getElementById('waveform');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const transcriptCard = document.getElementById('transcriptCard');
+            const transcriptText = document.getElementById('transcriptText');
+            const examplesGrid = document.getElementById('examplesGrid');
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const languagesTooltipTrigger = document.getElementById('languagesTooltipTrigger');
+            const languagesTooltipContent = document.getElementById('languagesTooltipContent');
+            const commentsToggleBtn = document.getElementById('commentsToggleBtn');
+            const commentSection = document.querySelector('.commentSection');
+            const copyTranscriptBtn = document.getElementById('copyTranscriptBtn');
+            const clearTextBtn = document.getElementById('clearTextBtn');
+            const demoVoicesTitleToggle = document.getElementById('demoVoicesTitleToggle');
+            const demoVoicesContent = document.getElementById('demoVoicesContent');
+            const maleVoicesGrid = document.getElementById('maleVoicesGrid');
+            const femaleVoicesGrid = document.getElementById('femaleVoicesGrid');
+            
+            // --- Global state ---
+            let audioFile = null;
+            let audioFormat = null;
+            let isPlaying = false;
+            let currentAudioURL = null;
+            let demoAudioElements = []; // Track demo audio elements for cleanup
+
+            // --- Demo Voices Data ---
+            const demoSamples = {
+              male: {
+                amuch: "https://user.uploads.dev/file/de6b7a2d96915b14f41e23faea2b6a5a.mp3",
+                ash: "https://user.uploads.dev/file/62bb87fc77b08d44e9951ababf2f638d.mp3",
+                ballad: "https://user.uploads.dev/file/bb4ccd94400fea308d1fa18caf2266e2.mp3",
+                dan: "https://user.uploads.dev/file/505c0ea3ffe8994a5683f7f5fb49a105.mp3",
+                echo: "https://user.uploads.dev/file/f7925798737e1e387757b44372da2a28.mp3",
+                jazz: "https://user.uploads.dev/file/822de27bc165f80fc7f820b86948ff41.mp3",
+                onyx: "https://user.uploads.dev/file/3e3c3f6958010969af4e08028ce8b752.mp3",
+                verse: "https://user.uploads.dev/file/075f8aa3026555f13436b4f3a2cd7aee.mp3"
+              },
+              female: {
+                alloy: "https://user.uploads.dev/file/2b3d5e4fb1557804d9ecb7ff8611b087.mp3",
+                aster: "https://user.uploads.dev/file/67d80219172ef82a7b6ece248312b6b6.mp3", 
+                brook: "https://user.uploads.dev/file/77e83045a115f82be7a9baebeb64b5b7.mp3",
+                clover: "https://user.uploads.dev/file/45292bdc6c4e2a6ceafb53051fca6b23.mp3",
+                coral: "https://user.uploads.dev/file/2af173fe4db9cb82654cda65b44ab551.mp3",
+                elan: "https://user.uploads.dev/file/b7bacda730eaf1032c36efae29a12bd1.mp3",
+                fable: "https://user.uploads.dev/file/e10ec1516b6e9efb156f49f179b453a8.mp3",
+                marilyn: "https://user.uploads.dev/file/bbac668438cd576309a8037b4662f0e9.mp3",
+                meadow: "https://user.uploads.dev/file/e834a4d7cb487d768a61ac3eb7c1363e.mp3",
+                nova: "https://user.uploads.dev/file/674685878e8035c34050e2595ccda90f.mp3",
+                rio: "https://user.uploads.dev/file/9198b7d7e489c5526a09601e0b4430ac.mp3",
+                sage: "https://user.uploads.dev/file/c91357a1802bc6051bbdae0b66e23d75.mp3",
+                shimmer: "https://user.uploads.dev/file/800cd27009f9601b2efb09446321f1e6.mp3"
+              }
+            };
+
+            // --- Initialize Demo Voices ---
+            function initializeDemoVoices() {
+                // Clear existing demos
+                maleVoicesGrid.innerHTML = '';
+                femaleVoicesGrid.innerHTML = '';
+                
+                // Stop and clear any playing demo audio
+                demoAudioElements.forEach(audio => {
+                    audio.pause();
+                    audio.src = '';
+                });
+                demoAudioElements = [];
+                
+                // Create male voice demos
+                Object.entries(demoSamples.male).forEach(([voice, url]) => {
+                    const card = createDemoVoiceCard(voice, "Male", url);
+                    maleVoicesGrid.appendChild(card);
+                });
+                
+                // Create female voice demos
+                Object.entries(demoSamples.female).forEach(([voice, url]) => {
+                    const card = createDemoVoiceCard(voice, "Female", url);
+                    femaleVoicesGrid.appendChild(card);
+                });
+                
+                // Initialize lucide icons for the new elements
+                lucide.createIcons();
+            }
+            
+            function createDemoVoiceCard(voice, gender, audioUrl) {
+                // Format voice name (capitalize first letter)
+                const formattedVoice = voice.charAt(0).toUpperCase() + voice.slice(1);
+                
+                // Create card element
+                const card = document.createElement('div');
+                card.className = 'demo-voice-card';
+                
+                // Create audio element
+                const audio = new Audio(audioUrl);
+                demoAudioElements.push(audio); // Track for cleanup
+                
+                // Create HTML structure
+                card.innerHTML = `
+                    <div class="compact-audio-player">
+                        <button class="compact-play-btn" aria-label="Play ${formattedVoice} demo">
+                            <i data-lucide="play" style="width: 14px; height: 14px;"></i>
+                        </button>
+                        <div class="compact-progress">
+                            <div class="compact-progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="demo-voice-info">
+                        <div class="demo-voice-name">${formattedVoice}</div>
+                        <div class="demo-voice-gender ${gender}">${gender}</div>
+                    </div>
+                `;
+                
+                // Setup play button and progress bar
+                const playBtn = card.querySelector('.compact-play-btn');
+                const progressBar = card.querySelector('.compact-progress-bar');
+                
+                // Add event listeners
+                playBtn.addEventListener('click', () => {
+                    // Stop all other demo audios
+                    demoAudioElements.forEach(a => {
+                        if (a !== audio && !a.paused) {
+                            a.pause();
+                            a.currentTime = 0;
+                            
+                            // Reset all other play buttons
+                            document.querySelectorAll('.compact-play-btn').forEach(btn => {
+                                if (btn !== playBtn) {
+                                    btn.innerHTML = '<i data-lucide="play" style="width: 14px; height: 14px;"></i>';
+                                    lucide.createIcons();
+                                }
+                            });
+                            
+                            // Reset all other progress bars
+                            document.querySelectorAll('.compact-progress-bar').forEach(bar => {
+                                if (bar !== progressBar) {
+                                    bar.style.width = '0%';
+                                }
+                            });
+                        }
+                    });
+                    
+                    // Toggle play/pause
+                    if (audio.paused) {
+                        audio.play();
+                        playBtn.innerHTML = '<i data-lucide="pause" style="width: 14px; height: 14px;"></i>';
+                    } else {
+                        audio.pause();
+                        playBtn.innerHTML = '<i data-lucide="play" style="width: 14px; height: 14px;"></i>';
+                    }
+                    lucide.createIcons();
+                });
+                
+                // Update progress bar
+                audio.addEventListener('timeupdate', () => {
+                    if (audio.duration) {
+                        const progress = (audio.currentTime / audio.duration) * 100;
+                        progressBar.style.width = `${progress}%`;
+                    }
+                });
+                
+                // Reset on end
+                audio.addEventListener('ended', () => {
+                    playBtn.innerHTML = '<i data-lucide="play" style="width: 14px; height: 14px;"></i>';
+                    lucide.createIcons();
+                    progressBar.style.width = '0%';
+                    audio.currentTime = 0;
+                });
+                
+                return card;
+            }
+            
+            // --- Demo Voices Toggle ---
+            demoVoicesTitleToggle.addEventListener('click', () => {
+                demoVoicesTitleToggle.classList.toggle('collapsed');
+                demoVoicesContent.classList.toggle('collapsed');
+                
+                // Stop all demo audio when collapsing
+                if (demoVoicesTitleToggle.classList.contains('collapsed')) {
+                    demoAudioElements.forEach(audio => {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    });
+                    
+                    // Reset all play buttons
+                    document.querySelectorAll('.compact-play-btn').forEach(btn => {
+                        btn.innerHTML = '<i data-lucide="play" style="width: 14px; height: 14px;"></i>';
+                    });
+                    
+                    // Reset all progress bars
+                    document.querySelectorAll('.compact-progress-bar').forEach(bar => {
+                        bar.style.width = '0%';
+                    });
+                    
+                    // Re-initialize lucide icons
+                    lucide.createIcons();
+                }
+            });
+
+            // --- Custom Voice Selector ---
+            const VOICE_STORAGE_KEY = 'argentScriptSelectedVoice';
+            
+            const selectedVoiceEl = document.getElementById('selectedVoice');
+            const selectedVoiceTextEl = document.getElementById('selectedVoiceText');
+            const voiceDropdownEl = document.getElementById('voiceDropdown');
+            const voiceOptionEls = document.querySelectorAll('.voice-option');
+            
+            // Load voice from localStorage
+            function initializeVoiceSelector() {
+                const savedVoice = localStorage.getItem(VOICE_STORAGE_KEY);
+                
+                if (savedVoice) {
+                    // Update the hidden select element
+                    voiceSelect.value = savedVoice;
+                    
+                    // Update the displayed text
+                    const selectedOption = document.querySelector(`.voice-option[data-value="${savedVoice}"]`);
+                    if (selectedOption) {
+                        selectedVoiceTextEl.textContent = selectedOption.textContent;
+                        
+                        // Mark as selected
+                        document.querySelectorAll('.voice-option.selected').forEach(el => {
+                            el.classList.remove('selected');
+                        });
+                        selectedOption.classList.add('selected');
+                    }
+                } else {
+                    // No saved voice, set the first option as selected
+                    const firstOption = document.querySelector('.voice-option');
+                    if (firstOption) {
+                        firstOption.classList.add('selected');
+                        selectedVoiceTextEl.textContent = firstOption.textContent;
+                        voiceSelect.value = firstOption.getAttribute('data-value');
+                    }
+                }
+            }
+            
+            // Toggle dropdown
+            selectedVoiceEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectedVoiceEl.classList.toggle('active');
+                voiceDropdownEl.classList.toggle('open');
+                
+                // If opening, scroll selected item into view
+                if (voiceDropdownEl.classList.contains('open')) {
+                    const selectedOption = document.querySelector('.voice-option.selected');
+                    if (selectedOption) {
+                        setTimeout(() => {
+                            selectedOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
+                    }
+                }
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!selectedVoiceEl.contains(e.target) && !voiceDropdownEl.contains(e.target)) {
+                    selectedVoiceEl.classList.remove('active');
+                    voiceDropdownEl.classList.remove('open');
+                }
+            });
+            
+            // Handle option selection
+            voiceOptionEls.forEach(option => {
+                option.addEventListener('click', () => {
+                    const value = option.getAttribute('data-value');
+                    
+                    // Clean up previous selection
+                    document.querySelectorAll('.voice-option.selected').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    // Update selection
+                    option.classList.add('selected');
+                    selectedVoiceTextEl.textContent = option.textContent;
+                    
+                    // Update the hidden select
+                    voiceSelect.value = value;
+                    
+                    // Save to localStorage
+                    localStorage.setItem(VOICE_STORAGE_KEY, value);
+                    
+                    // Close dropdown with animation
+                    setTimeout(() => {
+                        selectedVoiceEl.classList.remove('active');
+                        voiceDropdownEl.classList.remove('open');
+                    }, 150);
+                });
+            });
+
+            // Key names for localStorage
+            const TEXT_KEY = 'savedText';
+            const TONE_KEY = 'savedTone';
+
+            // Load saved values if available
+            const savedText = localStorage.getItem(TEXT_KEY);
+            const savedTone = localStorage.getItem(TONE_KEY);
+
+            if (savedText) textInput.value = savedText;
+            if (savedTone) tonesInput.value = savedTone;
+
+            // Generate waveform visualization
+            function generateWaveform() {
+                waveform.innerHTML = ''; // Clear existing bars
+                const numBars = 50; // Number of bars
+                
+                for (let i = 0; i < numBars; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'waveform-bar';
+                    
+                    // Create a waveform pattern that resembles audio
+                    let height;
+                    const position = i / numBars;
+                    
+                    // More randomness in the middle, less at the edges
+                    const centeredness = 1 - Math.abs(0.5 - position) * 2; // 1 at center, 0 at edges
+                    const randomFactor = 0.1 + centeredness * 0.4;
+                    
+                    // Calculate height with controlled randomness
+                    height = 0.2 + Math.random() * randomFactor;
+                    
+                    // Add a wave pattern
+                    height += 0.3 * Math.sin(position * Math.PI * 8);
+                    
+                    // Ensure height is within bounds
+                    height = Math.max(0.1, Math.min(0.9, height));
+                    
+                    bar.style.height = (height * 100) + '%';
+                    waveform.appendChild(bar);
+                }
+            }
+
+            // Update waveform colors based on progress
+            function updateWaveformColors(progress) {
+                const waveformBars = document.querySelectorAll('.waveform-bar');
+                const activeBarCount = Math.floor((progress / 100) * waveformBars.length);
+                
+                waveformBars.forEach((bar, index) => {
+                    if (index < activeBarCount) {
+                        bar.style.backgroundColor = 'var(--accent-color)';
+                        bar.style.boxShadow = '0 0 5px var(--accent-glow)';
+                    } else {
+                        bar.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+                        bar.style.boxShadow = 'none';
+                    }
+                });
+            }
+
+            // Initialize waveform when the page loads
+            generateWaveform();
+
+            // Function to save or clear inputs
+            function handleInputChange() {
+              const textVal = textInput.value.trim();
+              const toneVal = tonesInput.value.trim();
+
+              if (!textVal && !toneVal) {
+                // Both empty, clear storage
+                localStorage.removeItem(TEXT_KEY);
+                localStorage.removeItem(TONE_KEY);
+              } else {
+                // Save individually if not empty
+                if (textVal) localStorage.setItem(TEXT_KEY, textVal);
+                else localStorage.removeItem(TEXT_KEY);
+                
+                if (toneVal) localStorage.setItem(TONE_KEY, toneVal);
+                else localStorage.removeItem(TONE_KEY);
+              }
+            }
+
+            // Attach listeners to save and remove localStorage values
+            textInput.addEventListener('input', handleInputChange);
+            tonesInput.addEventListener('input', handleInputChange);
+
+            // Add event listener for the clear text button
+            clearTextBtn.addEventListener('click', function() {
+                textInput.value = '';
+                // Trigger input event to handle localStorage
+                textInput.dispatchEvent(new Event('input'));
+            });
+
+            // --- Initialize copy transcript functionality ---
+            copyTranscriptBtn.addEventListener('click', async () => {
+                const text = transcriptText.textContent;
+                if (text) {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        
+                        // Visual feedback
+                        copyTranscriptBtn.innerHTML = `<i data-lucide="check" style="width: 16px; height: 16px;"></i>`;
+                        copyTranscriptBtn.classList.add('copied');
+                        
+                        // Initialize the icon
+                        lucide.createIcons();
+                        
+                        // Reset after animation
+                        setTimeout(() => {
+                            copyTranscriptBtn.innerHTML = `<i data-lucide="copy" style="width: 16px; height: 16px;"></i>`;
+                            copyTranscriptBtn.classList.remove('copied');
+                            lucide.createIcons();
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy text: ', err);
+                    }
+                }
+            });
+
+            // --- Initialize comments toggle ---
+            commentSection.classList.remove('show'); // Initially hide the comment section
+            
+            commentsToggleBtn.addEventListener('click', () => {
+                commentSection.classList.toggle('show');
+                
+                // Add slight bounce animation to the toggle button
+                commentsToggleBtn.style.animation = 'none';
+                setTimeout(() => {
+                    commentsToggleBtn.style.animation = 'pulse 0.5s ease';
+                }, 10);
+            });
+
+            // --- Tooltip functionality ---
+            languagesTooltipTrigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent event from bubbling up
+                languagesTooltipContent.classList.toggle('show');
+            });
+
+            // Close tooltip when clicking outside
+            document.addEventListener('click', (e) => {
+                if (languagesTooltipContent.classList.contains('show') && 
+                    !languagesTooltipContent.contains(e.target) && 
+                    e.target !== languagesTooltipTrigger) {
+                    languagesTooltipContent.classList.remove('show');
+                }
+            });
+
+            // Close tooltip when ESC key is pressed
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && languagesTooltipContent.classList.contains('show')) {
+                    languagesTooltipContent.classList.remove('show');
+                }
+            });
+
+            // --- Example dataset ---
+            const examplesEN = [
+              {
+                "prompt": "Hey! Just checking if this voice feature actually works.",
+                "voice": "alloy",
+                "emotion": "calm and curious"
+              },
+              {
+                "prompt": "Oh come *on*, you *can't* be serious. [chuckles]",
+                "voice": "shimmer",
+                "emotion": "playfully dismissive"
+              },
+              {
+                "prompt": "[sniffling] It's been... one of those days. [deep breath]",
+                "voice": "ballad",
+                "emotion": "gloomy and vulnerable"
+              },
+              {
+                "prompt": "I can't believe how cool this sounds!",
+                "voice": "nova",
+                "emotion": "cheerful and amazed"
+              },
+              {
+                "prompt": "[evilly laugh] hahaha, you think you can deceive me, mortal? [sighs]",
+                "voice": "dan",
+                "emotion": "menacing and arrogant"
+              },
+              {
+                "prompt": "In the quiet hours of dawn, the world awakens in stillness and light.",
+                "voice": "sage",
+                "emotion": "serene and reflective"
+              }
+            ];
+            
+            const examplesJP = [
+              {
+                "prompt": "やあ！この音声機能、本当に動作してるのか試してみてるんだ。",
+                "voice": "alloy",
+                "emotion": "落ち着いていて、少し好奇心がある"
+              },
+              {
+                "prompt": "まさか、*それ*を選ぶつもりじゃないよね？ [クスクス]",
+                "voice": "shimmer",
+                "emotion": "軽く茶化すような皮肉"
+              },
+              {
+                "prompt": "[すすり泣き] 今日はちょっと…うまくいかない日かも [深いため息]",
+                "voice": "ballad",
+                "emotion": "沈んだ気持ちと弱さがにじむ"
+              },
+              {
+                "prompt": "うわぁ、これ、ほんとにすごいね！",
+                "voice": "nova",
+                "emotion": "明るくて感動している"
+              },
+              {
+                "prompt": "[邪悪な笑い] フフフ、人間よ、私を欺けるとでも？ [ため息]",
+                "voice": "dan",
+                "emotion": "傲慢で不気味な雰囲気"
+              },
+              {
+                "prompt": "夜が明ける頃、静けさの中に新しい始まりが訪れる。",
+                "voice": "sage",
+                "emotion": "穏やかで物思いにふける感じ"
+              }
+            ];
+
+            const examplesID = [
+              {
+                "prompt": "Halo! Aku lagi nyoba fitur suara ini, penasaran sih hasilnya gimana.",
+                "voice": "alloy",
+                "emotion": "tenang dan penasaran ringan"
+              },
+              {
+                "prompt": "Oh ayolah, *masa* kamu milih itu? [tertawa kecil]",
+                "voice": "shimmer",
+                "emotion": "sindirian santai dengan nada menggoda"
+              },
+              {
+                "prompt": "[isak pelan] Hari ini rasanya... berat banget. [tarik napas dalam]",
+                "voice": "ballad",
+                "emotion": "sedih dan rapuh, seperti ingin menangis"
+              },
+              {
+                "prompt": "Wah, keren banget sih ini! Nggak nyangka bakal sebagus ini!",
+                "voice": "nova",
+                "emotion": "ceria dan penuh semangat"
+              },
+              {
+                "prompt": "[tertawa jahat] Hahaha... kau pikir bisa menipuku, manusia lemah? [desahan]",
+                "voice": "onyx",
+                "emotion": "angkuh dan menyeramkan"
+              },
+              {
+                "prompt": "Saat pagi menjelang, dunia perlahan bangun dalam keheningan dan cahaya.",
+                "voice": "sage",
+                "emotion": "damai dan penuh perenungan"
+              }
+            ];
+
+            const examplesCN = [
+              {
+                "prompt": "嗨！我正在试试看这个语音功能能不能用。",
+                "voice": "alloy",
+                "emotion": "冷静且有点好奇"
+              },
+              {
+                "prompt": "你不会真的想这么做吧？*认真*？ [轻笑]",
+                "voice": "shimmer",
+                "emotion": "带点嘲讽的调侃"
+              },
+              {
+                "prompt": "[抽泣] 今天真的…有点撑不下去了。 [叹气]",
+                "voice": "ballad",
+                "emotion": "伤感且脆弱"
+              },
+              {
+                "prompt": "哇，这技术真的太棒了！完全超出我预期！",
+                "voice": "nova",
+                "emotion": "兴奋且开心"
+              },
+              {
+                "prompt": "[邪恶笑] 哈哈哈，你以为能骗我？愚蠢的人类。 [冷哼]",
+                "voice": "dan",
+                "emotion": "傲慢又充满威胁感"
+              },
+              {
+                "prompt": "黎明将至，万物在宁静中缓缓苏醒。",
+                "voice": "sage",
+                "emotion": "平和且富有哲理"
+              }
+            ];
+
+            const examplesAR = [
+              {
+                "prompt": "مرحباً! أنا فقط أختبر ميزة الصوت هذه، متحمس لرؤية النتيجة.",
+                "voice": "alloy",
+                "emotion": "هادئ وفضولي قليلاً"
+              },
+              {
+                "prompt": "حقاً؟ *أنت* تفكر في هذا الخيار؟ [يضحك بسخرية]",
+                "voice": "shimmer",
+                "emotion": "ساخر بأسلوب مازح"
+              },
+              {
+                "prompt": "[يبكي بهدوء] أشعر أنني لست بخير اليوم... [تنهد]",
+                "voice": "ballad",
+                "emotion": "حزين وضعيف، وكأن على وشك البكاء"
+              },
+              {
+                "prompt": "يا إلهي! هذا مذهل فعلاً!",
+                "voice": "nova",
+                "emotion": "مبتهج ومندهش"
+              },
+              {
+                "prompt": "[ضحكة شريرة] هاهاها، هل تظن أنك تستطيع خداعي أيها الفاني؟ [تنهد]",
+                "voice": "dan",
+                "emotion": "متكبر وشرير"
+              },
+              {
+                "prompt": "عندما يقترب الفجر، تستيقظ الأرض بهدوء وسط نور جديد.",
+                "voice": "sage",
+                "emotion": "هادئ وتأملي"
+              }
+            ]; 
+
+            const examplesRU = [
+              {
+                "prompt": "Привет! Просто проверяю, как работает этот голосовой режим.",
+                "voice": "alloy",
+                "emotion": "спокойный с лёгким интересом"
+              },
+              {
+                "prompt": "Ты *серьёзно* об этом думаешь? [усмешка]",
+                "voice": "shimmer",
+                "emotion": "шутливо-саркастичное настроение"
+              },
+              {
+                "prompt": "[всхлипывает] Просто… тяжёлый день. [глубокий вдох]",
+                "voice": "ballad",
+                "emotion": "грусть и эмоциональная уязвимость"
+              },
+              {
+                "prompt": "Ничего себе! Это звучит просто невероятно!",
+                "voice": "nova",
+                "emotion": "восторг и радость"
+              },
+              {
+                "prompt": "[зловещий смех] Ха-ха-ха... Ты думаешь, сможешь меня обмануть, смертный? [вздох]",
+                "voice": "dan",
+                "emotion": "высокомерный и зловещий"
+              },
+              {
+                "prompt": "На рассвете мир медленно оживает в тишине и свете.",
+                "voice": "sage",
+                "emotion": "спокойствие и философское размышление"
+              }
+            ];
+
+            const examplesHI = [
+              {
+                "prompt": "नमस्ते! मैं बस देख रहा हूँ कि ये वॉइस फीचर सही से काम कर रहा है या नहीं।",
+                "voice": "alloy",
+                "emotion": "शांत और थोड़ी जिज्ञासा के साथ"
+              },
+              {
+                "prompt": "तुम *वाकई* ये करने वाले हो? [हल्की हँसी]",
+                "voice": "shimmer",
+                "emotion": "हास्यपूर्ण ताने के साथ"
+              },
+              {
+                "prompt": "[सिसकते हुए] आज... थोड़ा भारी लग रहा है। [गहरी साँस]",
+                "voice": "ballad",
+                "emotion": "उदासी और भावनात्मक कमजोरी"
+              },
+              {
+                "prompt": "वाह! ये तो वाकई कमाल की चीज़ है!",
+                "voice": "nova",
+                "emotion": "उत्साहित और खुश"
+              },
+              {
+                "prompt": "[शैतानी हँसी] हाहाहा... तुम सोचते हो कि मुझे बेवकूफ़ बना सकते हो? [आह भरता है]",
+                "voice": "dan",
+                "emotion": "घमंडी और डरावना"
+              },
+              {
+                "prompt": "सुबह की पहली किरणों के साथ, दुनिया शांति में धीरे-धीरे जागती है।",
+                "voice": "sage",
+                "emotion": "शांत और विचारशील"
+              }
+            ];
+
+            const examplesDE = [
+              {
+                "prompt": "Hey! Ich teste gerade, ob diese Sprachfunktion richtig funktioniert.",
+                "voice": "alloy",
+                "emotion": "ruhig und ein wenig neugierig"
+              },
+              {
+                "prompt": "Du willst das *wirklich* machen? [lacht spöttisch]",
+                "voice": "shimmer",
+                "emotion": "sarkastisch und spielerisch provozierend"
+              },
+              {
+                "prompt": "[schluchzt] Heute ist einfach... zu viel. [tiefer Seufzer]",
+                "voice": "ballad",
+                "emotion": "traurig und verletzlich"
+              },
+              {
+                "prompt": "Wow, das ist ja richtig beeindruckend!",
+                "voice": "nova",
+                "emotion": "begeistert und fröhlich"
+              },
+              {
+                "prompt": "[boshaftes Lachen] Hahaha... Du glaubst, du kannst mich täuschen, Sterblicher? [seufzt]",
+                "voice": "dan",
+                "emotion": "arrogant und bedrohlich"
+              },
+              {
+                "prompt": "Wenn der Morgen dämmert, erwacht die Welt in stiller Harmonie.",
+                "voice": "sage",
+                "emotion": "gelassen und nachdenklich"
+              }
+            ];
+
+            const examplesFR = [
+              {
+                "prompt": "Salut ! Je teste juste cette fonction vocale pour voir si ça marche bien.",
+                "voice": "alloy",
+                "emotion": "calme avec une touche de curiosité"
+              },
+              {
+                "prompt": "Tu vas *vraiment* faire ça ? [petit rire moqueur]",
+                "voice": "shimmer",
+                "emotion": "sarcastique et taquin"
+              },
+              {
+                "prompt": "[sanglots] C'est… une journée difficile. [soupir profond]",
+                "voice": "ballad",
+                "emotion": "tristesse et fragilité émotionnelle"
+              },
+              {
+                "prompt": "Incroyable ! Ce truc est carrément génial !",
+                "voice": "nova",
+                "emotion": "enthousiaste et joyeux"
+              },
+              {
+                "prompt": "[rire maléfique] Hahaha... Tu penses pouvoir me tromper, misérable humain ? [soupir]",
+                "voice": "dan",
+                "emotion": "hautain et menaçant"
+              },
+              {
+                "prompt": "Quand l'aube se lève, le monde s'éveille doucement dans la paix et la lumière.",
+                "voice": "sage",
+                "emotion": "serein et contemplatif"
+              }
+            ];
+
+            // --- Spanish (Spain) ---
+            const examplesES = [
+              {
+                "prompt": "¡Hola! Solo estoy probando esta función de voz para ver si funciona.",
+                "voice": "alloy",
+                "emotion": "tranquilo con un poco de curiosidad"
+              },
+              {
+                "prompt": "¿En serio vas a hacer *eso*? [risa burlona]",
+                "voice": "shimmer",
+                "emotion": "sarcástico y juguetón"
+              },
+              {
+                "prompt": "[solloza] Hoy... no está siendo mi día. [suspiro]",
+                "voice": "ballad",
+                "emotion": "triste y vulnerable"
+              },
+              {
+                "prompt": "¡Wow, esto es una pasada!",
+                "voice": "nova",
+                "emotion": "entusiasta y alegre"
+              },
+              {
+                "prompt": "[risa malvada] Jajaja... ¿De verdad crees que puedes engañarme, humano? [suspiro]",
+                "voice": "dan",
+                "emotion": "arrogante y amenazante"
+              },
+              {
+                "prompt": "Cuando amanece, el mundo despierta poco a poco en calma y luz.",
+                "voice": "sage",
+                "emotion": "sereno y reflexivo"
+              }
+            ];
+
+            // --- Italian ---
+            const examplesIT = [
+              {
+                "prompt": "Ciao! Sto solo testando questa funzione vocale, per vedere se funziona bene.",
+                "voice": "alloy",
+                "emotion": "calmo e leggermente curioso"
+              },
+              {
+                "prompt": "Davvero vuoi fare *questo*? [risatina]",
+                "voice": "shimmer",
+                "emotion": "sarcastico e ironico"
+              },
+              {
+                "prompt": "[singhiozza] Oggi... è una giornata pesante. [sospiro]",
+                "voice": "ballad",
+                "emotion": "triste e fragile"
+              },
+              {
+                "prompt": "Wow! Questa cosa è davvero fantastica!",
+                "voice": "nova",
+                "emotion": "entusiasta e felice"
+              },
+              {
+                "prompt": "[risata malvagia] Ahahaha... pensi davvero di potermi ingannare, umano? [sospiro]",
+                "voice": "dan",
+                "emotion": "arrogante e minaccioso"
+              },
+              {
+                "prompt": "All'alba, il mondo si risveglia lentamente nella pace e nella luce.",
+                "voice": "sage",
+                "emotion": "sereno e meditativo"
+              }
+            ];
+
+            // --- Afrikaans ---
+            const examplesAF = [
+              {
+                "prompt": "Hallo! Ek toets net hierdie stemfunksie om te kyk of dit werk.",
+                "voice": "alloy",
+                "emotion": "rustig en nuuskierig"
+              },
+              {
+                "prompt": "Gaan jy *regtig* dit doen? [lag sarkasties]",
+                "voice": "shimmer",
+                "emotion": "spottend en speels"
+              },
+              {
+                "prompt": "[snikkend] Vandag voel net... moeilik. [sug]",
+                "voice": "ballad",
+                "emotion": "hartseer en broos"
+              },
+              {
+                "prompt": "Wow! Hierdie ding is ongelooflik!",
+                "voice": "nova",
+                "emotion": "opgewonde en vrolik"
+              },
+              {
+                "prompt": "[boosaardige lag] Hahaha... Dink jy regtig jy kan my flous, sterfling? [sug]",
+                "voice": "dan",
+                "emotion": "verwaand en dreigend"
+              },
+              {
+                "prompt": "Wanneer die son opkom, ontwaak die wêreld stadig in stilte en lig.",
+                "voice": "sage",
+                "emotion": "kalm en nadenkend"
+              }
+            ];
+            
+            // Default to English examples
+            let examples = examplesEN;
+
+            // --- Initialize language switcher ---
+            function initializeLanguageSwitch() {
+                langButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        // Remove active class from all buttons
+                        langButtons.forEach(b => b.classList.remove('active'));
+                        
+                        // Add active class to clicked button
+                        btn.classList.add('active');
+                        
+                        // Update examples based on language
+                        const lang = btn.dataset.lang;
+                        if (lang === 'id') {
+                            examples = examplesID;
+                        } else if (lang === 'jp') {
+                            examples = examplesJP;
+                        } else if (lang === 'cn') {
+                            examples = examplesCN;
+                        } else if (lang === 'ar') {
+                            examples = examplesAR;
+                        } else if (lang === 'ru') {
+                            examples = examplesRU;
+                        } else if (lang === 'hi') {
+                            examples = examplesHI;
+                        } else if (lang === 'de') {
+                            examples = examplesDE;
+                        } else if (lang === 'fr') {
+                            examples = examplesFR;
+                        } else if (lang === 'es') {
+                            examples = examplesES;
+                        } else if (lang === 'it') {
+                            examples = examplesIT;
+                        } else if (lang === 'af') {
+                            examples = examplesAF;
+                        } else {
+                            examples = examplesEN;
+                        }
+                        
+                        // Reinitialize examples
+                        examplesGrid.innerHTML = '';
+                        initializeExamples();
+                    });
+                });
+            }
+
+            // --- Initialize examples ---
+            function initializeExamples() {
+                examples.forEach((example, index) => {
+                    const exampleCard = document.createElement('div');
+                    exampleCard.className = 'example-card';
+                    exampleCard.innerHTML = `
+                        <div class="example-prompt">${example.prompt}</div>
+                        <div class="example-details">
+                            <div class="example-voice">${example.voice}</div>
+                            <div class="example-emotion">${example.emotion}</div>
+                        </div>
+                    `;
+                    
+                    exampleCard.addEventListener('click', () => {
+                        textInput.value = example.prompt;
+                        tonesInput.value = example.emotion;
+                        
+                        // Find and select the voice option
+                        for (let i = 0; i < voiceSelect.options.length; i++) {
+                            if (voiceSelect.options[i].value === example.voice) {
+                                voiceSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                        
+                        // Update custom voice selector
+                        const selectedOption = document.querySelector(`.voice-option[data-value="${example.voice}"]`);
+                        if (selectedOption) {
+                            // Clean up previous selection
+                            document.querySelectorAll('.voice-option.selected').forEach(el => {
+                                el.classList.remove('selected');
+                            });
+                            
+                            // Update selection
+                            selectedOption.classList.add('selected');
+                            selectedVoiceTextEl.textContent = selectedOption.textContent;
+                            
+                            // Save to localStorage
+                            localStorage.setItem(VOICE_STORAGE_KEY, example.voice);
+                        }
+                        
+                        // Scroll to the form
+                        audioForm.scrollIntoView({ behavior: 'smooth' });
+                    });
+                    
+                    examplesGrid.appendChild(exampleCard);
+                });
+            }
+            
+            // Initialize examples
+            initializeExamples();
+            
+            // Initialize language switcher
+            initializeLanguageSwitch();
+            
+            // Initialize voice selector
+            initializeVoiceSelector();
+            
+            // Initialize demo voices
+            initializeDemoVoices();
+
+            // --- Examples Section Toggle ---
+            const examplesTitleToggle = document.getElementById('examplesTitleToggle');
+            const examplesContent = document.getElementById('examplesContent');
+            
+            // Function to toggle examples section visibility
+            function toggleExamplesSection() {
+                examplesTitleToggle.classList.toggle('collapsed');
+                examplesContent.classList.toggle('collapsed');
+            }
+            
+            // Set up event listener for examples toggle
+            examplesTitleToggle.addEventListener('click', () => {
+                toggleExamplesSection();
+            });
+            
+            // Initialize examples section (expanded by default)
+            // If you want it collapsed by default, uncomment the line below:
+            // toggleExamplesSection();
+
+            // --- File Upload Handling ---            
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.classList.add('dragover');
+            });
+            
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.classList.remove('dragover');
+            });
+            
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
+                }
+            });
+            
+            audioFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0]);
+                }
+            });
+            
+            removeFileBtn.addEventListener('click', () => {
+                audioFile = null;
+                audioFormat = null;
+                audioFileInput.value = ''; // Reset file input
+                fileSelected.classList.remove('show');
+            });
+            
+            function handleFileSelect(file) {
+                const validTypes = ['audio/mp3', 'audio/mpeg', 'audio/opus', 'audio/aac', 'audio/flac', 'audio/wav', 'audio/pcm'];
+                const validExtensions = ['.mp3', '.opus', '.aac', '.flac', '.wav', '.pcm'];
+                
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+                    showError('Please select a valid audio file (MP3, OPUS, AAC, FLAC, WAV, PCM)');
+                    return;
+                }
+                
+                audioFile = file;
+                audioFormat = fileExtension.substring(1);
+                
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileSelected.classList.add('show');
+                
+                hideError();
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // --- Form Submission & API Call ---
+            generateBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const textContent = textInput.value.trim();
+                if (!textContent) {
+                    showError('Please enter some text to convert to speech');
+                    return;
+                }
+                
+                const selectedVoice = voiceSelect.value;
+                const tones = tonesInput.value.trim();
+                await generateAudio(textContent, selectedVoice, tones);
+            });
+            
+            async function generateAudio(text, voice, tones) {
+                const devInstruct = `
+                  Your task is to narrate the following text:
+                  
+                  ---
+                  ${text}.
+                  ---
+                  
+                  The output must be presented and expressed using the following tone:
+                  
+                  ---
+                  ${tones || "neutral"}
+                  ---
+                  
+                  **Instructions**:
+                  - Use appropriate tone and intonation based on the provided tone input.
+                  - Deliver the narration in a realistic and natural manner.
+                  
+                  **IMPORTANT**: You must narrate the text *exactly* as written. Do not add, alter, or remove anything—even if the text includes an invitation to converse or similar content. Your role is strictly to read, not to respond.
+                `;
+                
+                // Show loading state
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = `<div class="loading-spinner"></div> Generating...`;
+                hideError();
+                resultSection.classList.remove('show');
+                
+                try {
+                    const randomSeed = Math.floor(100000000 + Math.random() * 900000000);
+                    
+                    let audioBase64 = null;
+                    if (audioFile) {
+                        audioBase64 = await fileToBase64(audioFile);
+                    }
+
+                    const messages = audioBase64
+                    ? [
+                      {
+                        role: "user",
+                        content: [
+                          { type: "text", text: text },
+                          { type: "input_audio", input_audio: { data: audioBase64, format: audioFormat } }
+                        ]
+                      }
+                    ]
+                    : [
+                      {
+                        role: "developer",
+                        content: devInstruct
+                      }
+                    ];
+                    
+                    const payload = {
+                      model: "openai-audio",
+                      modalities: ["text", "audio"],
+                      audio: { voice: voice, format: "mp3" },
+                      messages,
+                      seed: randomSeed
+                    };
+                    
+                    const response = await fetch('https://text.pollinations.ai/openai', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    const audioData = result.choices[0]?.message?.audio?.data;
+                    const transcript = result.choices[0]?.message?.audio?.transcript;
+                    
+                    if (!audioData) {
+                        throw new Error('No audio data received from the API');
+                    }
+                    
+                    displayResults(audioData, transcript);
+                    
+                } catch (error) {
+                    console.error('Error generating audio:', error);
+                    showError('Failed to generate audio. Please try again.');
+                } finally {
+                    // Reset button state
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = `<i data-lucide="play" style="width: 20px; height: 20px;"></i> Generate Audio`;
+                    lucide.createIcons();
+                }
+            }
+            
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                        const base64 = reader.result.split(',')[1];
+                        resolve(base64);
+                    };
+                    reader.onerror = error => reject(error);
+                });
+            }
+            
+            function displayResults(audioData, transcript) {
+                const audioBlob = base64ToBlob(audioData, 'audio/mp3');
+                
+                // Clean up previous audio URL to prevent memory leaks
+                if (currentAudioURL) {
+                    URL.revokeObjectURL(currentAudioURL);
+                }
+                
+                currentAudioURL = URL.createObjectURL(audioBlob);
+                audioElement.src = currentAudioURL;
+                
+                downloadBtn.onclick = () => {
+                  const a = document.createElement('a');
+                  a.href = currentAudioURL;
+
+                  // Get real time
+                  const now = new Date();
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes()).padStart(2, '0');
+                  const seconds = String(now.getSeconds()).padStart(2, '0');
+                  const time = `${hours}${minutes}${seconds}`;
+
+                  // Date format YYYYMMDD
+                  const date = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+                  
+                  // Unique 6 digit
+                  const unique = Math.floor(Math.random() * 900000 + 100000); // 6 digit random
+                  
+                  // Compile 
+                  const filename = `audio_${time}+${date}_${unique}.mp3`;
+
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                };
+                
+                if (transcript) {
+                    transcriptText.textContent = transcript;
+                    transcriptCard.style.display = 'block';
+                } else {
+                    transcriptCard.style.display = 'none';
+                }
+                
+                resultSection.classList.add('show');
+                resetAudioPlayer();
+            }
+            
+            function base64ToBlob(base64, mimeType) {
+                try {
+                    const byteCharacters = atob(base64);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    return new Blob([byteArray], { type: mimeType });
+                } catch (e) {
+                    console.error("Failed to decode base64 string:", e);
+                    showError("Received invalid audio data from server.");
+                    return null;
+                }
+            }
+            
+            // --- Audio Player Controls ---
+            playBtn.addEventListener('click', () => {
+                if (!audioElement.src) return;
+                
+                if (audioElement.paused) {
+                    audioElement.play();
+                } else {
+                    audioElement.pause();
+                }
+            });
+            
+            progressContainer.addEventListener('click', (e) => {
+                if (!audioElement.src || !audioElement.duration) return;
+                
+                const rect = progressContainer.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                const percentage = clickX / width;
+                
+                audioElement.currentTime = audioElement.duration * percentage;
+            });
+            
+            audioElement.addEventListener('play', () => {
+                isPlaying = true;
+                updatePlayButton();
+            });
+
+            audioElement.addEventListener('pause', () => {
+                isPlaying = false;
+                updatePlayButton();
+            });
+
+            audioElement.addEventListener('ended', () => {
+                isPlaying = false;
+                updatePlayButton();
+                progressBar.style.width = '0%';
+                updateWaveformColors(0);
+                audioElement.currentTime = 0;
+            });
+            
+            audioElement.addEventListener('timeupdate', () => {
+                if (!audioElement.duration) return;
+                const progress = (audioElement.currentTime / audioElement.duration) * 100;
+                progressBar.style.width = progress + '%';
+                updateWaveformColors(progress);
+                timeDisplay.textContent = formatTime(audioElement.currentTime);
+            });
+
+            audioElement.addEventListener('loadedmetadata', () => {
+                 timeDisplay.textContent = formatTime(audioElement.duration);
+            });
+
+            function updatePlayButton() {
+                playBtn.innerHTML = isPlaying ? `<i data-lucide="pause"></i>` : `<i data-lucide="play"></i>`;
+                lucide.createIcons();
+            }
+
+            function resetAudioPlayer() {
+                audioElement.currentTime = 0;
+                progressBar.style.width = '0%';
+                updateWaveformColors(0);
+                isPlaying = false;
+                updatePlayButton();
+                if(audioElement.duration) {
+                     timeDisplay.textContent = formatTime(audioElement.duration);
+                } else {
+                    timeDisplay.textContent = "0:00";
+                }
+            }
+            
+            function formatTime(seconds) {
+                const min = Math.floor(seconds / 60);
+                const sec = Math.floor(seconds % 60);
+                return `${min}:${sec.toString().padStart(2, '0')}`;
+            }
+            
+            // --- Error Handling ---
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+            }
+            
+            function hideError() {
+                errorMessage.classList.remove('show');
+            }
+            
+            // --- Cleanup ---
+            window.addEventListener('beforeunload', () => {
+                if (currentAudioURL) {
+                    URL.revokeObjectURL(currentAudioURL);
+                }
+                
+                // Stop and clean up all demo audio
+                demoAudioElements.forEach(audio => {
+                    audio.pause();
+                    audio.src = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
